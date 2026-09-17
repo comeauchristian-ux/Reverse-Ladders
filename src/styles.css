@@ -92,3 +92,20 @@ textarea { resize: vertical; }
 .error { padding: 16px; border-radius: 12px; background: #fff0ec; color: #902b23; }
 .notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 button:disabled { opacity: .6; cursor: wait; }
+.workout-meta { text-align: center; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.working-panel, .rest-panel { text-align: center; }
+.rep-control { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 12px; align-items: center; }
+.rep-control input { text-align: center; font-size: 2.6rem; font-weight: 700; padding: 8px; }
+.rep-control button { font-size: 1.6rem; padding: 8px; }
+.rest-clock { position: relative; width: min(100%, 260px); aspect-ratio: 1; margin-inline: auto; }
+.rest-clock svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.rest-clock circle { fill: none; stroke-width: 8; }
+.rest-track { stroke: var(--color-border); }
+.rest-progress { stroke: var(--color-accent); stroke-linecap: round; }
+.rest-clock > div { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; }
+.rest-clock strong { font-size: 3rem; font-variant-numeric: tabular-nums; }
+.recorded-sets { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+.recorded-sets li { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.recorded-sets li span { color: var(--color-muted); }
+.checkbox-label { display: flex; align-items: center; gap: 12px; }
+.checkbox-label input { width: 24px; min-height: 44px; }

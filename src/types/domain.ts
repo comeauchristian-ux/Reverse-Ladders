@@ -43,6 +43,7 @@ export interface Workout extends ExerciseSnapshot {
 }
 
 export interface ActiveWorkout extends ExerciseSnapshot {
+  revision?: number
   id: string
   startedAt: string
   phase: 'working' | 'resting' | 'completed'
