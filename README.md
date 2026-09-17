@@ -5,11 +5,20 @@ A local-first reverse-ladder strength training PWA. Product requirements are in
 
 ## Current milestone
 
-Milestones 1 and 2 supply the React + Vite + TypeScript application shell, hash
-routing, mobile CSS, production PWA configuration, and a tested pure TypeScript
-ladder engine. Exercise management, IndexedDB schemas/repositories, workouts, and
-history are future milestones.
-The `idb` dependency is ready for the storage layer; this shell does not yet save data.
+Milestones 1–3 supply the React + Vite + TypeScript application, hash routing,
+mobile CSS, PWA configuration, tested ladder engine, and persistent exercise
+management. Add an exercise from the home screen, tap its card to see its ladder
+and minimum progression requirement, and use Edit to change its settings.
+Guided workouts, recovery UI, history UI, and statistics are later milestones.
+
+Exercises are stored in local IndexedDB through `idb`. Database version 1 also
+defines stores for completed workouts, max-rep tests, the current active workout
+(including rest timestamps), and preferences. No account or server is involved.
+Deletion requires confirmation and hides the exercise without removing historical
+records. The UI does not yet expose archived exercises. An active workout prevents
+deletion. Revisions protect edits/deletes against stale data from another window.
+Workout snapshots preserve the attempted ladder, name, variation, load type/unit,
+and rest setting independently of later exercise changes.
 
 ## Development
 
@@ -25,8 +34,10 @@ npm run preview
 ```
 
 On Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`.
-Unit tests use Node's built-in runner with TypeScript stripping, without additional
-test dependencies. `npm run typecheck` and `npm run build` also type-check tests.
+Unit tests use Node's built-in runner with TypeScript stripping. Storage tests use
+`fake-indexeddb` to verify persistence across connection reopen, validation, stale
+edits, and history preservation. `npm run typecheck` and `npm run build` also
+type-check tests. Device storage and installation still need real-browser checks.
 
 ## Ladder engine
 
@@ -52,13 +63,13 @@ are never compared against a progression threshold.
 
 - `src/components/`: shared presentation, starting with the app layout.
 - `src/pages/`: route-level screens.
-- `src/hooks/`: future React state/effect integration.
+- `src/hooks/`: React data-loading integration.
 - `src/lib/ladder/`: pure progression functions and the ladder state type.
 - `src/lib/workout/`: future workout transitions and timestamp calculations.
-- `src/lib/storage/`: future versioned IndexedDB repositories using `idb`.
+- `src/lib/storage/`: versioned IndexedDB schema and exercise repository using `idb`.
 - `src/lib/stats/`: future calculations from recorded performance.
-- `src/types/`: future shared domain types.
-- `tests/`: ladder engine unit tests; future integration tests.
+- `src/types/`: exercise, snapshot, workout, max-rep, and preferences records.
+- `tests/`: ladder engine and IndexedDB integration tests.
 - `public/`: local app icons, including placeholder PNGs for installation.
 
 Business rules belong outside React. Components should call the storage layer

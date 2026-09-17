@@ -65,3 +65,30 @@ p { color: var(--color-muted); line-height: 1.6; }
 }
 .skip-link { position: absolute; top: -100px; padding: 12px; background: #fff; color: var(--color-accent); }
 .skip-link:focus { top: 8px; z-index: 1; }
+.stack { display: flex; flex-direction: column; gap: 16px; }
+.panel { padding: 24px; }
+.exercise-card { display: flex; align-items: center; gap: 16px; padding: 20px; color: inherit; text-decoration: none; }
+.exercise-card > div { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.exercise-card h2 { font-size: 1.1rem; }
+.exercise-card p { font-size: .9rem; }
+.ladder-badge { font-size: 1.4rem; white-space: nowrap; }
+.section-heading, .actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.section-heading > div { min-width: 0; overflow-wrap: anywhere; }
+.text-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--color-accent); font-weight: 600; }
+.current-ladder { text-align: center; background: var(--color-accent-soft); }
+.current-ladder strong { display: block; font-size: 3.5rem; letter-spacing: -.04em; }
+.progression-preview { border-radius: 16px; padding: 20px; background: var(--color-accent-soft); display: grid; gap: 8px; }
+.eyebrow { font-size: .8rem; font-weight: 600; }
+.minimums { color: #28523b; font-weight: 700; font-size: 1.1rem; overflow-wrap: anywhere; }
+fieldset { margin: 0; min-width: 0; }
+label { display: grid; gap: 8px; font-size: .95rem; font-weight: 600; }
+label span { color: var(--color-muted); font-weight: 400; }
+input, select, textarea { width: 100%; min-width: 0; border: 1px solid #bfc9c2; border-radius: 10px; padding: 12px; min-height: 48px; background: #fff; color: inherit; font-size: 1rem; }
+textarea { resize: vertical; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.secondary { background: #e8ece8; color: #28523b; }
+.delete-button { border: 0; background: none; color: #a22b26; min-height: 48px; }
+.danger { background: #a22b26; }
+.error { padding: 16px; border-radius: 12px; background: #fff0ec; color: #902b23; }
+.notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+button:disabled { opacity: .6; cursor: wait; }
