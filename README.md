@@ -5,9 +5,10 @@ A local-first reverse-ladder strength training PWA. Product requirements are in
 
 ## Current milestone
 
-Milestone 1 supplies the React + Vite + TypeScript application shell, hash routing,
-mobile CSS, and production PWA configuration. Exercise management, the ladder
-engine, IndexedDB schemas/repositories, workouts, and history are future milestones.
+Milestones 1 and 2 supply the React + Vite + TypeScript application shell, hash
+routing, mobile CSS, production PWA configuration, and a tested pure TypeScript
+ladder engine. Exercise management, IndexedDB schemas/repositories, workouts, and
+history are future milestones.
 The `idb` dependency is ready for the storage layer; this shell does not yet save data.
 
 ## Development
@@ -18,24 +19,46 @@ Use Node.js 22.12+ (22.x) or 24+ and npm. The lockfile records exact dependency 
 npm ci
 npm run dev
 npm run typecheck
+npm test
 npm run build
 npm run preview
 ```
 
 On Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`.
-Domain unit tests will be added alongside the ladder engine in milestone 2.
+Unit tests use Node's built-in runner with TypeScript stripping, without additional
+test dependencies. `npm run typecheck` and `npm run build` also type-check tests.
+
+## Ladder engine
+
+`src/lib/ladder/index.ts` exports three pure functions:
+
+- `getProgressionMinimums(N, T)` returns N minimums, with `null` for tail sets.
+- `didPassProgression(N, T, actualReps)` checks the ordered qualifying prefix using
+  minimum thresholds. Missing required sets fail; extra reps and zero tail reps are
+  allowed. A passing prefix does not indicate workout completion. The future workout
+  layer must require all N sets before saving a session or changing progression.
+- `getNextProgression(N, T, progressionSuccess = true)` returns a suggested
+  `{ ladderSize, target }`: one step on success, unchanged on failure. The default
+  supports pre-workout previews. It never skips levels or persists a change.
+
+Ladders require safe integers with `N >= 2` and `2 <= T <= N`, so the duplicated
+bottom rung fits within N sets. Since the spec defines no rollover after `N:N`,
+the suggestion stays at `N:N`; a later UI can let the user choose another ladder.
+Invalid ladders, negative/fractional/non-finite reps, sparse rep sequences, and
+more than N recorded sets throw `RangeError`. Tail reps are validated as data but
+are never compared against a progression threshold.
 
 ## Structure
 
 - `src/components/`: shared presentation, starting with the app layout.
 - `src/pages/`: route-level screens.
 - `src/hooks/`: future React state/effect integration.
-- `src/lib/ladder/`: future pure progression functions.
+- `src/lib/ladder/`: pure progression functions and the ladder state type.
 - `src/lib/workout/`: future workout transitions and timestamp calculations.
 - `src/lib/storage/`: future versioned IndexedDB repositories using `idb`.
 - `src/lib/stats/`: future calculations from recorded performance.
 - `src/types/`: future shared domain types.
-- `tests/`: future domain and integration tests.
+- `tests/`: ladder engine unit tests; future integration tests.
 - `public/`: local app icons, including placeholder PNGs for installation.
 
 Business rules belong outside React. Components should call the storage layer
