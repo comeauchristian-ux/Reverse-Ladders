@@ -12,7 +12,7 @@ export function HomePage() {
       {active.error && <div role="alert"><p className="error">{active.error}</p><button className="button secondary" onClick={() => void active.reload()}>Reload workout</button></div>}
       {error ? <div role="alert" className="card panel"><p>{error}</p><button className="button" onClick={retry}>Try again</button></div>
         : exercises === null ? <p role="status">Loading exercises…</p>
-        : exercises.length === 0 ? <section className="card empty-state"><h2>Your next ladder starts here</h2><p>Add an exercise to keep track of your progression.</p></section>
+        : exercises.length === 0 ? <section className="card empty-state"><img className="empty-mark" src={`${import.meta.env.BASE_URL}favicon.svg`} width="56" height="56" alt="" /><h2>Your next ladder starts here</h2><p>Add an exercise to keep track of your progression.</p></section>
         : <div className="stack" aria-label="Exercises">{exercises.map((exercise) => <ExerciseCard key={exercise.id} exercise={exercise} />)}</div>}
       <Link className="button" to="/exercises/new">+ Add exercise</Link>
     </div>

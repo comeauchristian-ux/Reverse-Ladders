@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+on:
+  workflow_dispatch:
+    inputs:
+      base_path:
+        description: 'Optional base path override (use / for a custom domain)'
+        required: false
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - name: Select Pages base path
+        env:
+          REQUESTED_BASE: ${{ inputs.base_path }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs';
+          const repository = process.env.GITHUB_REPOSITORY.split('/')[1];
+          const base = process.env.REQUESTED_BASE || (repository.endsWith('.github.io') ? '/' : `/${repository}/`);
+          if (!/^\/(?:[A-Za-z0-9._-]+\/)*$/.test(base)) throw new Error('Use a slash-delimited base path.');
+          appendFileSync(process.env.GITHUB_ENV, `VITE_BASE_PATH=${base}\n`);
+          NODE
+      - run: npm run build
+      - run: npm run verify:dist
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
+        id: deployment

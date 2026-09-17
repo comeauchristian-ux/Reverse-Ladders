@@ -5,15 +5,17 @@ A local-first reverse-ladder strength training PWA. Product requirements are in
 
 ## Current milestone
 
-Milestones 1–5 supply the React + Vite + TypeScript application, hash routing,
+Milestones 1–6 supply the React + Vite + TypeScript application, hash routing,
 mobile CSS, PWA configuration, tested ladder engine, and persistent exercise
 management. Add an exercise from the home screen, tap its card to see its ladder
 and minimum progression requirement, and use Edit to change its settings.
 Start a guided workout from an exercise, record actual reps, and follow the
 automatic rest timer. Completion shows reps, duration, density, and progression
 outcome, with an editable next-session ladder. Each exercise has history,
-compact statistics, and a separate max-rep test form. Device checks and final
-visual/release polish remain for milestone 6.
+compact statistics, and a separate max-rep test form. Mobile layout polish,
+accessible set progress, offline status, and automated release checks are included.
+Real-browser visual/offline checks and installed-device acceptance are still pending;
+see [release checks and their recorded status](docs/RELEASE_CHECKS.md).
 
 Exercises are stored in local IndexedDB through `idb`. Database version 1 also
 defines stores for completed workouts, max-rep tests, the current active workout
@@ -78,6 +80,7 @@ npm run typecheck
 npm test
 npm run build
 npm run preview
+npm run check
 ```
 
 On Windows PowerShell, use `npm.cmd` if execution policy blocks `npm.ps1`.
@@ -85,6 +88,9 @@ Unit tests use Node's built-in runner with TypeScript stripping. Storage tests u
 `fake-indexeddb` to verify persistence across connection reopen, validation, stale
 edits, and history preservation. `npm run typecheck` and `npm run build` also
 type-check tests. Device storage and installation still need real-browser checks.
+`npm run check` additionally builds and verifies root/subdirectory artifacts and
+local HTTP paths. It leaves a root build in `dist/` and an ignored test build in
+`.release-check/`. Run `npm run build` afterward when using a custom deployment base.
 
 ## Ladder engine
 
@@ -93,15 +99,15 @@ type-check tests. Device storage and installation still need real-browser checks
 - `getProgressionMinimums(N, T)` returns N minimums, with `null` for tail sets.
 - `didPassProgression(N, T, actualReps)` checks the ordered qualifying prefix using
   minimum thresholds. Missing required sets fail; extra reps and zero tail reps are
-  allowed. A passing prefix does not indicate workout completion. The future workout
-  layer must require all N sets before saving a session or changing progression.
+  allowed. A passing prefix does not indicate workout completion. The workout
+  layer requires all N sets before saving a session or changing progression.
 - `getNextProgression(N, T, progressionSuccess = true)` returns a suggested
   `{ ladderSize, target }`: one step on success, unchanged on failure. The default
   supports pre-workout previews. It never skips levels or persists a change.
 
 Ladders require safe integers with `N >= 2` and `2 <= T <= N`, so the duplicated
 bottom rung fits within N sets. Since the spec defines no rollover after `N:N`,
-the suggestion stays at `N:N`; a later UI can let the user choose another ladder.
+the suggestion stays at `N:N`; the completion screen lets the user choose another ladder.
 Invalid ladders, negative/fractional/non-finite reps, sparse rep sequences, and
 more than N recorded sets throw `RangeError`. Tail reps are validated as data but
 are never compared against a progression threshold.
@@ -128,8 +134,10 @@ no global state-management library is included.
 The default base path is `/`. For a repository site, copy `.env.example` to
 `.env.local` and set `VITE_BASE_PATH` to the exact case-sensitive repository path,
 such as `/Reverse-Ladders/`. Run `npm run build`, then publish the contents of `dist/`
-through your preferred GitHub Pages deployment workflow. No deployment is performed
-by these scripts.
+using the included manual **Deploy to GitHub Pages** workflow. Enable GitHub Actions
+as the Pages source first. The workflow derives the case-sensitive repository path
+or accepts an explicit base override. **Check MVP** runs validation on pushes/PRs
+without deployment. No deployment has been performed during implementation.
 
 Use `VITE_BASE_PATH` rather than a separate CLI `--base` override so the manifest,
 service-worker scope, and built asset paths share the same setting. Preview the
@@ -144,7 +152,8 @@ After an initial online visit and service-worker installation, the application s
 is cached for offline use. Assets and fonts are local. HTTPS (or localhost) is required
 for service workers. Development mode intentionally does not register one.
 
-Updates wait for existing app windows to close; they do not force a reload. A future
-workout-aware update prompt can be added with the workout flow. Placeholder icons,
-standalone display, theme metadata, and safe-area spacing are included. Full device
-installation and interrupted-workout checks belong to later milestones.
+Updates wait for existing app windows to close; they do not force a reload. App
+icons, standalone display, theme metadata, and safe-area spacing are included.
+The offline indicator appears when the browser reports no network connection.
+Automated checks validate generated cache configuration; actual offline reload and
+installed-device behavior still need the manual pass in `docs/RELEASE_CHECKS.md`.

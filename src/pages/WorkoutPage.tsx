@@ -5,6 +5,7 @@ import { currentMinimum, defaultReps, elapsedSeconds, formatTime, remainingRest 
 import { formatLoad } from '../components/ExerciseCard'
 import { getDatabase } from '../lib/storage/database'
 import { WorkoutSummary } from '../components/WorkoutSummary'
+import { SetProgress } from '../components/SetProgress'
 
 export function WorkoutPage() {
   const active = useWorkout()
@@ -110,6 +111,7 @@ export function WorkoutPage() {
         : !resumed ? <section className="card panel stack"><h2>Continue your workout?</h2><p>{workout.sets.length} of {workout.ladderSize} sets recorded. Elapsed time includes time away.</p><button className="button" disabled={busy} onClick={() => { armSound(); setNow(Date.now()); automaticAttempt.current = ''; active.resume() }}>Continue workout</button></section>
         : <>
           <p className="workout-meta">{workout.sets.length} completed · {workout.ladderSize - workout.sets.length} remaining · Elapsed {formatTime(elapsedSeconds(workout, now))}</p>
+          <SetProgress completed={workout.sets.length} total={workout.ladderSize} />
           {workout.phase === 'resting' ? <section className="card panel stack rest-panel" aria-label="Rest timer">
             <h2>Rest</h2>
             <div className="rest-clock"><svg viewBox="0 0 120 120" aria-hidden="true"><circle className="rest-track" cx="60" cy="60" r="52" /><circle className="rest-progress" cx="60" cy="60" r="52" pathLength="100" strokeDasharray="100" strokeDashoffset={100 * (1 - Math.min(1, remaining / Math.max(1, workout.restSeconds)))} /></svg><div role="timer" aria-label="Rest remaining"><strong>{formatTime(remaining)}</strong><p>/ {formatTime(workout.restSeconds)}</p></div></div>
@@ -117,7 +119,7 @@ export function WorkoutPage() {
             {currentMinimum(workout) !== null && <p>Minimum: {currentMinimum(workout)} reps</p>}
             <button className="button secondary" disabled={busy} onClick={() => void active.rest(true)}>Skip rest</button>
           </section> : <form className="card panel stack working-panel" onSubmit={(event) => { event.preventDefault(); armSound(); if (reps.trim() !== '') void active.complete(Number(reps)) }}>
-            <h2>Set {workout.sets.length + 1} of {workout.ladderSize}</h2>
+            <h2 aria-live="polite">Set {workout.sets.length + 1} of {workout.ladderSize}</h2>
             <p role="status">{currentMinimum(workout) === null ? 'As many good reps as you can.' : `Minimum: ${currentMinimum(workout)} reps`}</p>
             <label htmlFor="actual-reps">Actual reps</label>
             <div className="rep-control"><button className="button secondary" type="button" aria-label="Decrease reps" disabled={busy || Number(reps) <= 0} onClick={() => setReps(String(Math.max(0, Number(reps) - 1)))}>−</button><input id="actual-reps" aria-label="Actual reps" type="number" inputMode="numeric" min="0" max={Number.MAX_SAFE_INTEGER} step="1" required disabled={busy} value={reps} onChange={(event) => setReps(event.target.value)} /><button className="button secondary" type="button" aria-label="Increase reps" disabled={busy || Number(reps) >= Number.MAX_SAFE_INTEGER} onClick={() => setReps(String(Number(reps) + 1))}>+</button></div>

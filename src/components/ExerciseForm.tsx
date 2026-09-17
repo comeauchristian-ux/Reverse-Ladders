@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { getDatabase } from '../lib/storage/database'
@@ -19,9 +19,11 @@ export function ExerciseForm({ exercise }: { exercise?: Exercise }) {
   const [notes, setNotes] = useState(exercise?.notes ?? '')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const saving = useRef(false)
   async function save(event: FormEvent) {
     event.preventDefault()
-    if (busy) return
+    if (saving.current) return
+    saving.current = true
     setError('')
     setBusy(true)
     try {
@@ -32,6 +34,7 @@ export function ExerciseForm({ exercise }: { exercise?: Exercise }) {
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Could not save this exercise. Please try again.')
       setBusy(false)
+      saving.current = false
     }
   }
   return <form className="stack" onSubmit={save}>

@@ -40,7 +40,8 @@ export function WorkoutSummary({ workout }: { workout: ActiveWorkout }) {
   }
   const valid = keep || (size !== '' && target !== '' && Number.isSafeInteger(Number(size)) && Number.isSafeInteger(Number(target)) && Number(size) >= 2 && Number(target) >= 2 && Number(target) <= Number(size))
   return <section className="card panel stack">
-    <h2>Workout complete</h2>
+    <div className="completion-mark" aria-hidden="true">✓</div>
+    <h2 role="status">Workout complete</h2>
     <p>{workout.ladderSize}:{workout.target} attempted · {workout.sets.length} sets recorded</p>
     <dl className="metrics"><div><dt>Total reps</dt><dd>{metrics.totalReps}</dd></div><div><dt>Duration</dt><dd>{formatTime(metrics.durationSeconds)}</dd></div><div><dt>Density</dt><dd>{metrics.density === null ? '—' : `${metrics.density.toFixed(1)} reps/min`}</dd></div></dl>
     <p className={metrics.passed ? 'result-pass' : 'result-missed'}>Progression target: {metrics.passed ? 'PASSED' : 'NOT COMPLETED'}</p>
