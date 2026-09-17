@@ -21,6 +21,7 @@ export interface Exercise extends ExerciseInput {
 /** Copied at workout start: subsequent exercise edits never rewrite history. */
 export interface ExerciseSnapshot extends Omit<ExerciseInput, 'notes'> {
   exerciseId: string
+  exerciseRevision?: number
 }
 
 export interface WorkoutSet {
@@ -31,6 +32,10 @@ export interface WorkoutSet {
 }
 
 export interface Workout extends ExerciseSnapshot {
+  progressionDecision?: {
+    decidedAt: string
+    next: { ladderSize: number; target: number } | null
+  }
   id: string
   date: string
   startedAt: string

@@ -29,7 +29,7 @@ export function normalizeExercise(input: ExerciseInput): ExerciseInput {
 
 export function snapshotExercise(exercise: Exercise): ExerciseSnapshot {
   const { name, variation, loadType, load, loadUnit, ladderSize, target, restSeconds } = exercise
-  return { exerciseId: exercise.id, name, variation, loadType, load, loadUnit, ladderSize, target, restSeconds }
+  return { exerciseId: exercise.id, exerciseRevision: exercise.revision, name, variation, loadType, load, loadUnit, ladderSize, target, restSeconds }
 }
 
 export function exerciseRepository(db: IDBPDatabase<LadderDatabase>) {

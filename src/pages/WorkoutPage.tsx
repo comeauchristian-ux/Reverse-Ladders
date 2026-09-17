@@ -4,6 +4,7 @@ import { useWorkout } from '../hooks/WorkoutContext'
 import { currentMinimum, defaultReps, elapsedSeconds, formatTime, remainingRest } from '../lib/workout'
 import { formatLoad } from '../components/ExerciseCard'
 import { getDatabase } from '../lib/storage/database'
+import { WorkoutSummary } from '../components/WorkoutSummary'
 
 export function WorkoutPage() {
   const active = useWorkout()
@@ -105,7 +106,7 @@ export function WorkoutPage() {
     {error && <div role="alert" className="stack"><p className="error">{error}</p><button className="button secondary" onClick={() => void active.reload()}>Reload saved workout</button></div>}
     {!workout ? <section className="card panel"><h2>No active workout</h2><p>Choose an exercise to start training.</p></section> : <>
       <div className="section-heading"><div><h2>{workout.name}</h2><p>{formatLoad(workout)}{workout.variation ? ` · ${workout.variation}` : ''}</p></div><strong className="ladder-badge">{workout.ladderSize}:{workout.target}</strong></div>
-      {workout.phase === 'completed' ? <section className="card panel stack"><h2>Workout complete</h2><p>All {workout.ladderSize} sets have been saved.</p><p>Duration: {formatTime(elapsedSeconds(workout, now))}</p><button className="button" disabled={busy} onClick={dismiss}>Done</button></section>
+      {workout.phase === 'completed' ? <WorkoutSummary key={workout.id} workout={workout} />
         : !resumed ? <section className="card panel stack"><h2>Continue your workout?</h2><p>{workout.sets.length} of {workout.ladderSize} sets recorded. Elapsed time includes time away.</p><button className="button" disabled={busy} onClick={() => { armSound(); setNow(Date.now()); automaticAttempt.current = ''; active.resume() }}>Continue workout</button></section>
         : <>
           <p className="workout-meta">{workout.sets.length} completed · {workout.ladderSize - workout.sets.length} remaining · Elapsed {formatTime(elapsedSeconds(workout, now))}</p>

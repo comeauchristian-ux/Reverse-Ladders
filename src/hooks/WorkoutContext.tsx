@@ -3,6 +3,8 @@ import type { ReactNode } from 'react'
 import type { ActiveWorkout } from '../types/domain'
 import { getDatabase } from '../lib/storage/database'
 import { workoutRepository } from '../lib/storage/workouts'
+import { historyRepository } from '../lib/storage/history'
+import type { LadderState } from '../lib/ladder'
 
 function useWorkoutState() {
   const [workout, setWorkout] = useState<ActiveWorkout | null>(null)
@@ -39,6 +41,10 @@ function useWorkoutState() {
     complete: (reps: number) => run((repo) => repo.complete(workout!, reps)),
     rest: (skip = false) => run((repo) => repo.rest(workout!, skip)),
     dismiss: () => run((repo) => repo.dismiss(workout!)),
+    finalize: (next: LadderState | null, revision?: number) => run(async (repo) => {
+      await historyRepository(await getDatabase()).finalize(workout!.id, next, revision)
+      return repo.get()
+    }),
   }
 }
 const WorkoutContext = createContext<ReturnType<typeof useWorkoutState> | null>(null)

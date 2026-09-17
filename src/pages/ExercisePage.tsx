@@ -47,6 +47,7 @@ export function ExercisePage({ edit = false }: { edit?: boolean }) {
         <div className="section-heading"><div><h2>{exercise.name}</h2><p>{formatLoad(exercise)}</p>{exercise.variation && <p>{exercise.variation}</p>}</div><Link className="text-link" to={`/exercises/${id}/edit`}>Edit</Link></div>
         <section className="card panel current-ladder"><p className="eyebrow">Current ladder</p><strong>{exercise.ladderSize}:{exercise.target}</strong><p>Rest: {exercise.restSeconds} seconds</p></section>
         <ProgressionPreview ladderSize={exercise.ladderSize} target={exercise.target} />
+        <Link className="button secondary" to={`/exercises/${id}/history`}>View history & statistics</Link>
         {active.error && <p role="alert" className="error">{active.error}</p>}
         {active.workout ? <Link className="button" to="/workout">{active.workout.phase === 'completed' ? 'View completed workout' : 'Continue workout'} · {active.workout.name}</Link>
           : <button className="button" disabled={active.loading || active.busy} onClick={async () => { if (await active.start(exercise.id)) navigate('/workout') }}>{active.busy ? 'Starting…' : 'Start workout'}</button>}

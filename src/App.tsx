@@ -6,6 +6,8 @@ import { ExercisePage } from './pages/ExercisePage'
 import { ExerciseForm } from './components/ExerciseForm'
 import { WorkoutProvider } from './hooks/WorkoutContext'
 import { WorkoutPage } from './pages/WorkoutPage'
+import { HistoryPage } from './pages/HistoryPage'
+import { MaxRepPage } from './pages/MaxRepPage'
 
 export function App() {
   return (
@@ -15,6 +17,8 @@ export function App() {
         <Route path="exercises/new" element={<ExerciseForm />} />
         <Route path="exercises/:id" element={<ExercisePage />} />
         <Route path="exercises/:id/edit" element={<ExercisePage edit />} />
+        <Route path="exercises/:id/history" element={<HistoryPage />} />
+        <Route path="exercises/:id/max-rep" element={<MaxRepPage />} />
         <Route path="workout" element={<WorkoutPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

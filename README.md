@@ -5,13 +5,15 @@ A local-first reverse-ladder strength training PWA. Product requirements are in
 
 ## Current milestone
 
-Milestones 1–4 supply the React + Vite + TypeScript application, hash routing,
+Milestones 1–5 supply the React + Vite + TypeScript application, hash routing,
 mobile CSS, PWA configuration, tested ladder engine, and persistent exercise
 management. Add an exercise from the home screen, tap its card to see its ladder
 and minimum progression requirement, and use Edit to change its settings.
 Start a guided workout from an exercise, record actual reps, and follow the
-automatic rest timer. History UI, detailed completion summaries, progression
-acceptance/override, and statistics are milestone 5.
+automatic rest timer. Completion shows reps, duration, density, and progression
+outcome, with an editable next-session ladder. Each exercise has history,
+compact statistics, and a separate max-rep test form. Device checks and final
+visual/release polish remain for milestone 6.
 
 Exercises are stored in local IndexedDB through `idb`. Database version 1 also
 defines stores for completed workouts, max-rep tests, the current active workout
@@ -35,15 +37,35 @@ reopening offers Continue/Discard, and expired rest resumes at the next set.
 Elapsed time includes time spent away and freezes at the final set timestamp.
 Unsubmitted rep input is not a recorded set and resets to its default on reload.
 
-The final set and completed workout record save in one transaction. Done clears
-the active slot while preserving that record. This milestone deliberately leaves
-exercise progression unchanged; suggestion acceptance comes in milestone 5.
+The final set and completed workout record save in one transaction. Done or
+Save and view history then commits the selected progression decision, exercise
+update, and active-slot cleanup in another atomic transaction. A saved decision
+cannot be applied twice. Suggested progression moves only one target on success
+and stays unchanged on failure or at N:N. The user can override it or explicitly
+keep current exercise settings. If the exercise was edited during the workout,
+the default is to preserve those edits; stale submissions are rejected.
 Discard requires confirmation and only removes the unfinished active session.
 
 Optional sound and vibration preferences persist. Alerts are best effort: browser
 suspension, platform support, and device settings may prevent them while locked.
 The timer still reconstructs correctly when the app resumes. Background alarms
 and installed-device behavior require manual checks on the target device.
+
+## History and statistics
+
+History combines completed workouts and separately labeled max-rep tests, newest
+first. Workout entries retain the original ladder, load, variation, rest setting,
+actual sequence, and missed minimums. Date-only max tests display in local time
+and sort at local noon on that date. They never change ladder progression or
+contribute to workout statistics. Max tests support bodyweight, added/external
+load, units, a date, reps, and optional notes.
+
+Summary/history metrics are recalculated from sets and raw timestamps. Average
+density is the arithmetic mean of session densities. Zero-duration sessions show
+no density and are excluded from average/best density. Highest ladders compare N
+first, then T, independent of load/variation. Existing version-1 records remain
+readable; snapshot revisions and progression decisions are optional additive
+fields, so no destructive schema migration is needed.
 
 ## Development
 
@@ -92,7 +114,7 @@ are never compared against a progression threshold.
 - `src/lib/ladder/`: pure progression functions and the ladder state type.
 - `src/lib/workout/`: pure workout transitions and timestamp calculations.
 - `src/lib/storage/`: versioned IndexedDB schema and exercise repository using `idb`.
-- `src/lib/stats/`: future calculations from recorded performance.
+- `src/lib/stats/`: summary and exercise statistics from recorded performance.
 - `src/types/`: exercise, snapshot, workout, max-rep, and preferences records.
 - `tests/`: ladder engine, workout transitions, and IndexedDB integration tests.
 - `public/`: local app icons, including placeholder PNGs for installation.
